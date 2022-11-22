@@ -21,4 +21,8 @@ For pytorch following the link of <https://pytorch.org/> and select your operati
 Note: If you installed anconda it is proably most easy to install from the anaconda prompt on Windows
 
 # Downloading the program
-Having installed python and the addtional packages our program can now be downloaded via 
+Having installed python and the addtional packages our program can now be downloaded by cloning the repo. A guide on how to do this is shown in the link below
+
+github clone guide: <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>
+
+
