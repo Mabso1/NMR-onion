@@ -23,6 +23,13 @@ Note: If you installed anconda it is proably most easy to install from the anaco
 # Downloading the program
 Having installed python and the addtional packages our program can now be downloaded by cloning the repo. A guide on how to do this is shown in the link below
 
-github clone guide: <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>
+Github clone guide: <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>
 
+To download our repository type the following command:
+
+```
+git clonehttps://github.com/Mabso1/NMR-onion_test.git
+```
+
+Having trouble installing, checkout our youtube video 
 
