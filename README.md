@@ -33,3 +33,16 @@ git clonehttps://github.com/Mabso1/NMR-onion_test.git
 
 Having trouble installing, checkout our youtube video 
 
+# Running the program
+To run the program follow the instructions in the example folder using this link: 
+
+To download the data for running the examples either clone the repository or followig this guide <https://www.wikihow.com/Download-a-GitHub-Folder> on how to download a single folder.
+
+Note, currently only data recorded on Bruker instruments are supported for the native data import function. You can however use the various NMRgule data import features for loading different data format, but you have to write the import data function yourself. Alternatively save the specrum as a txt file and manually do an inverse fft to get the time domain data, while also settting the spectral parameters manually. 
+
+# Additional information
+For more information on the background behind the program read our article at
+
+
+
+
