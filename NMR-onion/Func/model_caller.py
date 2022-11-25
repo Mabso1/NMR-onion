@@ -58,9 +58,14 @@ def onion_model_call(model_name,omega_hz_filtered,tn_new,t_new,fs_new,y_norm):
         return model_fit
     
     
-def onion_bootstrap_call(B,CI_level,alpha,omega,scale1,scale2,t,k,y,fs,model_name,low_ppm,high_ppm,freq,SF,O1p,eta=None):
+def onion_bootstrap_call(B,CI_level,par_hat,t,k,y,fs,model_name,low_ppm,high_ppm,freq,SF,O1p):
     if (model_name=="skewed_lorentzian"):
         from lorentzian_bootstrap_function import lorentzian_wild_boostrap
+        
+        alpha=par_hat[0:k]
+        omega=par_hat[k:2*k]
+        scale1=par_hat[2*k:2*k+1]
+        scale2=par_hat[2*k+1:3*k+1]
         
         start =time.time()
         boot=lorentzian_wild_boostrap(B,CI_level,alpha,omega,scale1,scale2,t,k,y,fs,model_name,low_ppm,high_ppm,freq,SF,O1p)
@@ -71,6 +76,12 @@ def onion_bootstrap_call(B,CI_level,alpha,omega,scale1,scale2,t,k,y,fs,model_nam
     elif(model_name=="skewed_pvoigt"):
         from pvoigt_bootstrap_function import pvoigt_wild_boostrap
         
+        alpha=par_hat[0:k]
+        omega=par_hat[k:(2*k)]
+        eta=par_hat[(2*k):(3*k)]
+        scale1=par_hat[(3*k):(3*k+1)]
+        scale2=par_hat[(3*k+1):(4*k+1)]
+        
         start =time.time()
         boot=pvoigt_wild_boostrap(B,CI_level,alpha,omega,eta,scale1,scale2,t,k,y,fs,model_name,low_ppm,high_ppm,freq,SF,O1p)
         print((time.time() - start))
@@ -79,6 +90,12 @@ def onion_bootstrap_call(B,CI_level,alpha,omega,scale1,scale2,t,k,y,fs,model_nam
         
     elif(model_name=="skewed_genvoigt"):
         from genvoigt_bootstrap_function import genvoigt_wild_boostrap
+        
+        alpha=par_hat[0:k]
+        omega=par_hat[k:(2*k)]
+        eta=par_hat[(2*k):(3*k)]
+        scale1=par_hat[(3*k):(3*k+1)]
+        scale2=par_hat[(3*k+1):(4*k+1)]
         
         start =time.time()
         boot=genvoigt_wild_boostrap(B,CI_level,alpha,omega,eta,scale1,scale2,t,k,y,fs,model_name,low_ppm,high_ppm,freq,SF,O1p)

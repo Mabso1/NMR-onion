@@ -8,6 +8,72 @@ Created on Fri Sep 30 16:31:27 2022
 import numpy as np
 from scipy.special import expit as expit_sci
 
+# get paramters out as a vector based on best model and its estimated parameters
+def par_hat_output(best_model,par_res):
+    if (best_model=="skewed_lorentzian"):
+        omega=par_res['omega_est']
+        alpha=par_res['alpha_est']
+        scale1=par_res['scale'] # 
+        scale2=par_res['scale1']#
+        pars_hat=np.concatenate(np.array([alpha,omega,scale1,scale2])) #
+        
+    elif (best_model=="skewed_pvoigt"):
+        omega=par_res['omega_est']
+        alpha=par_res['alpha_est']
+        eta=par_res['eta_est'] 
+        scale1=par_res['scale'] 
+        scale2=par_res['scale1']
+        pars_hat=np.concatenate(np.array([alpha,omega,eta,scale1,scale2])) #
+        
+    elif (best_model=="skewed_genvoigt"):
+        omega=par_res['omega_est']
+        alpha=par_res['alpha_est']
+        eta=par_res['eta_est'] 
+        scale1=par_res['scale'] 
+        scale2=par_res['scale1']
+        pars_hat=np.concatenate(np.array([alpha,omega,eta,scale1,scale2])) #
+        
+    elif (best_model=="genvoigt"):
+        omega=par_res['omega_est']
+        alpha=par_res['alpha_est']
+        eta=par_res['eta_est'] 
+        scale1=par_res['scale'] 
+        pars_hat=np.concatenate(np.array([alpha,omega,eta,scale1])) #   
+        
+    elif (best_model=="pvoigt"):
+        omega=par_res['omega_est']
+        alpha=par_res['alpha_est']
+        eta=par_res['eta_est'] 
+        scale1=par_res['scale'] 
+        pars_hat=np.concatenate(np.array([alpha,omega,eta,scale1])) #    
+    
+    elif (best_model=="lorentzian"):
+        omega=par_res['omega_est']
+        alpha=par_res['alpha_est']
+        scale1=par_res['scale'] 
+        pars_hat=np.concatenate(np.array([alpha,omega,scale1])) #   
+    
+    return(pars_hat)
+
+# automatical mode selection based of either BIC or AIC 
+def model_auto_select(model_compare_BIC,model_compare_AIC,fits,omega_hz_filtered,BIC):
+    model_names=np.array(["skewed_lorentzian","skewed_pvoigt","skewed_genvoigt","lortentzian","pvoigt","genvoigt"])
+
+    if (BIC==True):
+        idx_model=np.argmin(model_compare_BIC)
+    else:
+        idx_model=np.argmin(model_compare_AIC)
+    
+    model=model_names[idx_model]
+    
+    best_fit=fits[idx_model]
+    
+    k=len(omega_hz_filtered)
+    
+    par_results=par_est(fit=best_fit, k=k, model_name=model)
+      
+    return par_results,model,k
+
 ###softplus function ###
 # defines the softplus activation function for numpy implementation
 ### inputs ###

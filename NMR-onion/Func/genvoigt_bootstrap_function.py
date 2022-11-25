@@ -60,6 +60,21 @@ def genvoigt_wild_boostrap(B,CI_level,alpha,omega,eta,scale1,scale2,t,k,y,fs,mod
     scale1_boot_clean=boot_res.T[3*k:(3*k+1)]
     scale2_boot_clean=boot_res.T[(3*k+1):(4*k+1)]
     
+    # remove outliers based on IQR*1.5
+    Q1=omega_boot_clean.quantile(0.25,axis=1)
+    Q3=omega_boot_clean.quantile(0.75,axis=1)
+    IQR=Q3-Q1
+    
+    no_outlier = omega_boot_clean.T[~((omega_boot_clean.T < (Q1 - 1.5 * IQR)) |(omega_boot_clean.T > (Q3 + 1.5 * IQR))).any(axis=1)]
+    
+    row_idx=no_outlier.index.values
+    
+    alpha_boot_clean=alpha_boot_clean.T.loc[row_idx].T
+    omega_boot_clean=omega_boot_clean.T.loc[row_idx].T
+    eta_boot_clean=eta_boot_clean.T.loc[row_idx].T
+    scale1_boot_clean=scale1_boot_clean.T.loc[row_idx].T
+    scale2_boot_clean=scale2_boot_clean.T.loc[row_idx].T
+    
     # get Confidence intervals for each parameter
     alpha=1-CI_level # get CI level
     
