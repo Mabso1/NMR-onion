@@ -58,7 +58,9 @@ def par_hat_output(best_model,par_res):
 # automatical mode selection based of either BIC or AIC 
 def model_auto_select(model_compare_BIC,model_compare_AIC,fits,omega_hz_filtered,BIC):
     model_names=np.array(["skewed_lorentzian","skewed_pvoigt","skewed_genvoigt","lortentzian","pvoigt","genvoigt"])
-
+    model_compare_BIC[np.isnan(model_compare_BIC)]=0.0
+    model_compare_AIC[np.isnan(model_compare_AIC)]=0.0
+    
     if (BIC==True):
         idx_model=np.argmin(model_compare_BIC)
     else:

@@ -129,7 +129,7 @@ def onion_genvoigt(omega,tn,t,fs,y):
     k=len(init_f)    
     init_a=np.repeat(0.0,k)
     init_e=np.repeat(0.54,k)
-    init_scale=1
+    init_scale=0.0
     init_scale2=np.repeat(0.0,k)        
         
     init_a=np.hstack(init_a)
@@ -198,7 +198,7 @@ def onion_genvoigt(omega,tn,t,fs,y):
     model = sinusoid_refit()
         
         # call the optimizer            0
-    optimizer=torch.optim.LBFGS(model.parameters(), lr=1, max_iter=15, tolerance_grad=1e-5, tolerance_change=1e-09, history_size=100, line_search_fn='strong_wolfe')
+    optimizer=torch.optim.LBFGS(model.parameters(), lr=1, max_iter=20, tolerance_grad=1e-5, tolerance_change=1e-09, history_size=100, line_search_fn='strong_wolfe')
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.70)
     #scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
 

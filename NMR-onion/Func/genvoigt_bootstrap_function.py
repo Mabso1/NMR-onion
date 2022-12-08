@@ -30,20 +30,23 @@ def genvoigt_wild_boostrap(B,CI_level,alpha,omega,eta,scale1,scale2,t,k,y,fs,mod
         y_resamp=wild_bootstrap(y_hat=y_hat, residuals=resids)
         
         y_dem,fs_new,tn_new,t_new,freq_new,hz_moved=signal_decimate(low_ppm=low_ppm,high_ppm=high_ppm, y_filt=y_resamp, freq=freq, SF=SF, O1p=O1p, fs=fs)
-
-        wild_fit=fit_parameter_error(par_hat=par_hat, fs=fs_new, t=t_new, k=k, y=y_dem)
         
-        par_res=par_est(fit=wild_fit, k=k, model_name=model_name)
-        omega_boot=par_res['omega_est']-hz_moved
-        alpha_boot=expit_sci(par_res['alpha_est']) #convert with expit_sci
-        eta_boot=Softplus(par_res['eta_est'])  # convert to Softplus
-        scale1_boot=par_res['scale'] # uncomment if model is skewed 
-        scale2_boot=par_res['scale1'] # uncomment if model is skewd
-        
-        B_temp=np.concatenate((alpha_boot,omega_boot,eta_boot,scale1_boot,scale2_boot))
-            # append samples
-        Boots.append(B_temp)
-        print(l) # print sample number
+        try:
+            wild_fit=fit_parameter_error(par_hat=par_hat, fs=fs_new, t=t_new, k=k, y=y_dem)
+            
+            par_res=par_est(fit=wild_fit, k=k, model_name=model_name)
+            omega_boot=par_res['omega_est']-hz_moved
+            alpha_boot=expit_sci(par_res['alpha_est']) #convert with expit_sci
+            eta_boot=Softplus(par_res['eta_est'])  # convert to Softplus
+            scale1_boot=par_res['scale'] # uncomment if model is skewed 
+            scale2_boot=par_res['scale1'] # uncomment if model is skewd
+            
+            B_temp=np.concatenate((alpha_boot,omega_boot,eta_boot,scale1_boot,scale2_boot))
+                # append samples
+            Boots.append(B_temp)
+            print(l) # print sample number
+        except:
+            continue
         
     boot_res=pd.DataFrame(Boots) # store bootstap samples
     if (boot_res.isnull().values.any()==True):

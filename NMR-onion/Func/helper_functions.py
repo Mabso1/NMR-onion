@@ -77,6 +77,15 @@ def calc_couplings(omega,k):
         
     return j_mat
 
+# count number of overlaps in ROI
+# returns 0=no overlap, 1=overlap
+def count_overlaps(idx_list,k):
+    dummy_array=np.repeat(np.nan,k)
+    dummy_array[idx_list]=1
+    dummy_array[np.isnan(dummy_array)]=0
+    
+    return dummy_array
+
 # remove nans from bootstrap samples
 def rm_nans(boot_samples):
      nan_idx=np.argwhere(np.isnan(np.array(boot_samples[0])))
@@ -85,12 +94,17 @@ def rm_nans(boot_samples):
      
      return bootsamples_no_nan
 
-def result_csv(single_sinusoids,boot_samples,k,omega,SF,j_mat,O1,O1p):
+def result_csv(single_sinusoids,boot_samples,k,omega,idx_list,SF,j_mat,O1,O1p):
     # amplitudes ratio
     k=len(omega)
     amp_ratios=amp_ratio(peaks=single_sinusoids, k=k)
     omega_ppm=hz2ppm(omega_hz=omega, SF=SF, O1p=O1p)
-
+    
+    overlap_array=count_overlaps(idx_list, k)
+    
+    # get correct indexing
+    boot_samples['omega_std'].index=range(k)
+    
     #table of uncertainties
     res_uncertantinty=pd.DataFrame(({'omega_hz_error':boot_samples['omega_std'],
                                 'omega_hz_CI_lower':boot_samples['omega_CI_lower']+O1,
@@ -106,6 +120,7 @@ def result_csv(single_sinusoids,boot_samples,k,omega,SF,j_mat,O1,O1p):
     res_region=pd.DataFrame(({'amp_ratio':amp_ratios,
                              'omega_hz':omega+O1,
                              'omega_ppm':omega_ppm,
+                             'overlaps':overlap_array
                              }))
 
     res_combo=pd.concat([res_region,res_uncertantinty,j_mat],axis=1)
@@ -166,15 +181,97 @@ def createResultPath(filetype):
             path=testpath
     return path
  
-#################### functions not implemented yet####################################################
-# remove outliers from bootstrap
-#def rm_outliers():
- #   Q1=np.quantile(boot_samples['bootstrap_samples'][1],0.25)
-  #  Q3=np.quantile(boot_samples['bootstrap_samples'][1],0.75)
-  #  IQR=Q3-Q1
-  #  cut1=Q1-IQR*1.5
-   # cut2=Q3+IQR*1.5    
- #   idx=np.where( (cut1>test1[1]) &  (cut2<test1[1]) )
+def getoverlaps(boot_samples,omega_ppm,k):
+    
+    # get omega bootstrap samples and index according to number of sinusoid k
+    omega_samples=boot_samples['omega_boot']
+    omega_samples.index = range(k)
+    
+    # get CI uppper and lower for the bootraps and index accroding to number of k sinusoids    
+    roi_CIl=boot_samples['omega_CI_lower']
+    roi_CIu=boot_samples['omega_CI_upper']
 
+    roi_CIl.index = range(k)
+    roi_CIu.index = range(k)
+    
+    # collect CIs in dataframe
+    df=pd.concat((roi_CIl,roi_CIu),axis=1)
+    df.columns=np.array(['omega_CI_lower','omega_CI_upper'])
+    
+    # find overlapping CIs
+    df = df.sort_values("omega_CI_lower").reset_index(drop=True)
+    idx = 0
+    dfs = []
+    while True:
+        low = df.omega_CI_lower[idx]
+        high = df.omega_CI_upper[idx]
+        sub_df = df[(df.omega_CI_lower <= high) & (low <= df.omega_CI_upper)]
+        dfs.append(sub_df)
+        idx = sub_df.index.max() + 1
+        if idx > df.index.max():
+            break
+    # set the collected overlappings CIs as array
+    dummy=[]
+    for i in range(0,len(dfs)):
+        grps=np.array([dfs[i].index])
+        dummy.append(grps)
+  
+    
+    overlap_list=[]
+    for i in range(0,len(dummy)):
+        omega_ppm_list=omega_ppm[dummy[i]]
+        overlap_list.append(omega_ppm_list)    
+   
+    # replace non overlaps with nans
+    for i in range(0,len(dummy)):
+        bool_point=len(overlap_list[i][0])>1
+    
+        if(bool_point==True):
+            overlap_list[i][0]=overlap_list[i][0]
+        else:
+            overlap_list[i][0]=np.nan
+    # find the index of non nans
+    overlap_dots=np.hstack(np.hstack(overlap_list))
+    idx_overlaps=np.argwhere(~np.isnan(overlap_dots))
+    
+    test=len(idx_overlaps)==0
+    
+    if (test==True):
+        return []
+    
+    overlap_dots=overlap_dots[idx_overlaps]
+   
+    # collect the index list of overlaps
+    idx_list=[]
+    for i in range(0,len(overlap_dots)):
+        idx_point=np.argwhere(overlap_dots[i]==omega_ppm)
+        idx_list.append(idx_point)
+    idx_list=np.hstack(np.hstack(idx_list))
+    
+    return idx_list
  
+#################### functions not implemented yet####################################################
+## automatic generation of all bootrap samples histrogram plot functiom
+
+#df_max=omega_samples.T.max(axis=1).max()+O1
+#df_min=omega_samples.T.min(axis=1).min()+O1
+
+#sub_roi_CIl=res_combo['omega_hz_CI_lower']
+#sub_roi_CIu=res_combo['omega_hz_CI_upper']
+
+#sub_roi_CIl.index = range(k)
+#sub_roi_CIu.index = range(k)
+
+#df=pd.concat((sub_roi_CIl,sub_roi_CIu),axis=1)
+
+#_, bins, _ = plt.hist(omega_samples.T[idx_list[0]], bins=500,range=(df_min,df_max))
+#plt.title("boostrap samples of two peaks")
+#plt.xlabel("Hz")
+#plt.ylabel("Emperical density")
+#plt.xlim(-2340+O1,-2350+O1)
+#for i in range(0,3):
+#    _= plt.hist(omega_samples.T[idx_list[i+13]]+O1,fc="none",ec="b", bins=bins)
+#    plt.axvline(sub_roi_CIl[idx_list[i+13]])
+#    plt.axvline(sub_roi_CIu[idx_list[i+13]])
+#plt.savefig('peaks_overlaps_subROI1_figure1.svg')  
     
