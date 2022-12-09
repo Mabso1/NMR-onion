@@ -1,5 +1,5 @@
 # NMR-onion
-Hello and welcome to the NMR-onion github repo. Prior to installing the program please make sure you have downloaded the following requriements
+Hello and welcome to the NMR-onion github repo. Prior to installing the program please make sure you have downloaded the packages listed in addational requriements before proceeding
 
 # Installing python
 Getting python via anconda <https://www.anaconda.com/products/distribution>
