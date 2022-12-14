@@ -1,11 +1,11 @@
 # NMR-onion
-Hello and welcome to the NMR-onion github repo. Prior to installing the program please make sure you have downloaded the packages listed in addational requriements before proceeding
+Hello and welcome to the NMR-onion github repo. Prior to installing the program please make sure you have downloaded Python and the packages listed in addational requriements before proceeding
 
 # Installing python
 Getting python via anconda <https://www.anaconda.com/products/distribution>
 
 # Additonal packages required
-1) pytorch <https://pytorch.org/>
+1) Pytorch <https://pytorch.org/>
 2) NMRglue <https://nmrglue.readthedocs.io/en/latest/tutorial.html>
 3) sklearn <https://scikit-learn.org/stable/install.html>
 4) rle <https://pypi.org/project/python-rle/>
