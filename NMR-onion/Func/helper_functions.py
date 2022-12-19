@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import math
 import os
+import matplotlib.pyplot as plt
 
 
 # collect of various smaller functions
@@ -49,6 +50,14 @@ def hz2ppm(omega_hz,SF,O1p):
 def ppm2hz(ppm_value,SF,O1p):
     omega_hz=(ppm_value-O1p)*SF
     return omega_hz
+
+# get raw amplitude heights of real spectrum
+def get_amps(peaks,k):
+    peaks_collect=[]
+    for i in range(0,k):
+        max_peak=np.real(np.max(np.fft.fftshift(np.fft.fft(peaks[i]))))
+        peaks_collect.append(max_peak)
+    return peaks_collect
 
 # compute the height ratio between peaks
 def amp_ratio (peaks,k):
@@ -98,6 +107,7 @@ def result_csv(single_sinusoids,boot_samples,k,omega,idx_list,SF,j_mat,O1,O1p):
     # amplitudes ratio
     k=len(omega)
     amp_ratios=amp_ratio(peaks=single_sinusoids, k=k)
+    raw_amps=get_amps(peaks=single_sinusoids, k=k)
     omega_ppm=hz2ppm(omega_hz=omega, SF=SF, O1p=O1p)
     
     overlap_array=count_overlaps(idx_list, k)
@@ -120,7 +130,8 @@ def result_csv(single_sinusoids,boot_samples,k,omega,idx_list,SF,j_mat,O1,O1p):
     res_region=pd.DataFrame(({'amp_ratio':amp_ratios,
                              'omega_hz':omega+O1,
                              'omega_ppm':omega_ppm,
-                             'overlaps':overlap_array
+                             'overlaps':overlap_array,
+                             'amp_height': raw_amps
                              }))
 
     res_combo=pd.concat([res_region,res_uncertantinty,j_mat],axis=1)
@@ -249,7 +260,64 @@ def getoverlaps(boot_samples,omega_ppm,k):
     idx_list=np.hstack(np.hstack(idx_list))
     
     return idx_list
- 
+
+# plot histogram of up to 3 peaks next to one another to check for overlaps
+def plot_freq_CIs(boot_samples,k,O1,idx_list,peak1,peak2,peak3=None,saveplot=False,myplot_name=None):
+    
+    # get bootstrap samples
+    omega_samples=boot_samples['omega_boot']
+    omega_samples.index = range(k)
+    
+    # set min and max for histograms
+    df_max=omega_samples.T.max(axis=1).max()+O1
+    df_min=omega_samples.T.min(axis=1).min()+O1
+    
+    # get CI cutoffs
+    sub_roi_CIl=boot_samples['omega_CI_lower']+O1
+    sub_roi_CIu=boot_samples['omega_CI_upper']+O1
+
+    sub_roi_CIl.index = range(k)
+    sub_roi_CIu.index = range(k)
+    
+    # get up to three peak bootstaps to plot
+    #hz_range=ppm2hz(ppm_range,SF,O1p)
+    peak1_idx=np.where(peak1==idx_list)
+    peak2_idx=np.where(peak2==idx_list)
+    peak3_idx=np.where(peak3==idx_list)
+    
+    # set range of plot
+    range_min=omega_samples.T[idx_list[peak1_idx]].min(axis=1).min()+O1-3
+    
+    if (peak3==None):
+        range_max=omega_samples.T[idx_list[peak2_idx]].max(axis=1).max()+O1+3
+   
+    else:
+        range_max=omega_samples.T[idx_list[peak3_idx]].max(axis=1).max()+O1+3
+    
+    _, bins, _ = plt.hist(omega_samples.T[idx_list[0]], bins=500,range=(df_min,df_max))
+    plt.title("boostrap samples of peaks")
+    plt.xlabel("Hz")
+    plt.ylabel("Emperical density")
+  
+    plt.xlim(range_min,range_max)
+    #PFP_len=len(idx_list)
+    #for i in range(0,PFP_len):
+    _= plt.hist(omega_samples.T[idx_list[peak1_idx]]+O1,color="r", bins=bins,density=True)  
+    _= plt.hist(omega_samples.T[idx_list[peak2_idx]]+O1,ec="b",fc="none", bins=bins,density=True)    
+    _= plt.hist(omega_samples.T[idx_list[peak3_idx]]+O1,color="r", bins=bins,density=True)  
+    plt.axvline(sub_roi_CIl[idx_list[np.hstack(peak1_idx)[0]]],color="green")
+    plt.axvline(sub_roi_CIu[idx_list[np.hstack(peak1_idx)[0]]],color="green")
+    plt.axvline(sub_roi_CIl[idx_list[np.hstack(peak2_idx)[0]]],color="black")
+    plt.axvline(sub_roi_CIu[idx_list[np.hstack(peak2_idx)[0]]],color="black")
+    plt.axvline(sub_roi_CIl[idx_list[np.hstack(peak3_idx)[0]]],color="yellow")
+    plt.axvline(sub_roi_CIu[idx_list[np.hstack(peak3_idx)[0]]],color="yellow")
+    
+    # save the plot, default is false
+    if (saveplot==True):
+        plt.savefig('myplot_name')
+
+
+
 #################### functions not implemented yet####################################################
 ## automatic generation of all bootrap samples histrogram plot functiom
 
