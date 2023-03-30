@@ -29,7 +29,8 @@ def import_data(path,zerofill):
     data=np.real(data)-1j*np.imag(data) # make sure imaginary part turns the spectrum the correct way
     
     if (zerofill==True):
-        data = ng.proc_base.zf_size(data, len(data)*2) # zero fill the data back to orignal length
+        data = ng.proc_base.zf_size(data, len(data)*2**3,mid=False) # zero fill the data back to orignal length
+       # data=ng.proc_base.zf_auto(data)
         N=len(data)
     else:
         data=data
