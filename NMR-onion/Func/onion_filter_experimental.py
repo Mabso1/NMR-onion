@@ -76,6 +76,31 @@ def filter_bandwidth_hz_idx(ve,low_hz,high_hz,fs):
     return bandwidth
 
 
+def filtering_fun_ajusting_p(y,low_ppm,high_ppm,fs,SF,O1p,p):
+    ve=virtual_echo(y)
+    center=ROI_center(low_ppm,high_ppm,ve,fs,SF,O1p)
+    bw=filter_bandwidth(ve, low_ppm, high_ppm, SF, O1p, fs)
+    
+    for i, (n, c, b) in enumerate(zip(ve.shape, (center,), (bw,))):
+            # 1D array of super-Gaussian for particular dimension
+            if c is None:
+                s = np.ones(n)
+            else:
+                s = np.exp(-(2 ** (p + 1)) * ((np.arange(1, n + 1) - c) / b) ** p)
+
+            if i == 0:
+                sg = s
+            else:
+                sg = sg[..., None] * s
+            
+            sg+(1j*np.zeros(sg.shape))
+
+    spec=np.fft.fftshift(np.fft.fft(np.real(ve)-1j*np.imag(ve)))
+    
+    spec_filt=spec*sg
+    
+    return sg,spec,spec_filt,center
+
 
 def filtering_fun(y,low_ppm,high_ppm,fs,SF,O1p):
     ve=virtual_echo(y)
@@ -158,8 +183,10 @@ def baseline_arPLS(y, ratio=1e-6, lam=100, niter=10, full_output=False):
         return z    
 
 def filter_noise(y,noise_region,spectrum,fs,SF,O1p):
+    np.random.seed(3)
     N=len(y)
     noise_list=[]
+   # noise_list_mean=[]
     
     slice_=slice(noise_idx(y,noise_region,fs,SF,O1p)[1],noise_idx(y,noise_region,fs,SF,O1p)[0])
     noise_region=spectrum[1][slice_]
@@ -175,8 +202,11 @@ def filter_noise(y,noise_region,spectrum,fs,SF,O1p):
         noise_list.append(noise_als)
     
     noise_level=np.mean(np.std(noise_list,axis=1))
+   # for i in range(0,1000):
     noise_als=np.random.normal(0,noise_level,N*2-1)
+     #   noise_list_mean.append(noise_als)
     
+    #noise_als=np.median(noise_list,axis=0)
     noise_out=noise_als
     
     # convole noise and filter
@@ -288,11 +318,16 @@ def signal_decimate(y_filt,low_ppm,high_ppm,freq,SF,O1p,fs):
 
 
 
-def data2fit(ROI,noise_region,data_path):
+def data2fit(low_ppm,high_ppm,noise_region,data,fs,O1,fs_ppm,SF,O1p,ZF):
 
-    # import the data with needed process and aqusition parameters
-    # import data,data length, sample rate, O1, spectromtor frequency, sweep width (ppm), O1p, zerofill data if needed
-    data,N,fs,O1,SF,fs_ppm,O1p=import_data(path=data_path,zerofill=True)
+    idx_zero=np.where(np.real(data)==0)
+    data=np.delete(data,idx_zero)
+    if (ZF==True):
+        data = ng.proc_base.zf_size(data, len(data)*2,mid=False)
+    else:
+        data=data
+        
+    N=len(data)
 
     # define discrete time (tn) and measure timed (t)
     tn=t_disrecte(N)
@@ -301,10 +336,6 @@ def data2fit(ROI,noise_region,data_path):
     # define ppm axis
     freq=freq_hz(tn=tn, fs=fs)
     ppm_val=ppm_axis1(time=t, O1=O1, fs=fs, fs_ppm=fs_ppm)
-
-
-    high_ppm=ROI[1]# set ppm values for region cuts
-    low_ppm=ROI[0]# set ppm values for region cuts
 
     # apply digital filter to get region of interest and estimated noise level
     y_filt,noise_level=onion_filter(low_ppm, high_ppm, noise_region, data, fs, SF, O1p)
