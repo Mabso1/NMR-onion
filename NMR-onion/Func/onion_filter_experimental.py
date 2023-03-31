@@ -183,7 +183,7 @@ def baseline_arPLS(y, ratio=1e-6, lam=100, niter=10, full_output=False):
         return z    
 
 def filter_noise(y,noise_region,spectrum,fs,SF,O1p):
-    np.random.seed(3)
+    np.random.seed(8)
     N=len(y)
     noise_list=[]
    # noise_list_mean=[]
