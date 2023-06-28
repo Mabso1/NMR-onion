@@ -145,6 +145,35 @@ def result_csv(single_sinusoids,boot_samples,k,omega,idx_list,SF,j_mat,O1,O1p):
     res_combo.to_csv(path,index=True,sep=";")
     return res_combo
 
+
+def result_csv_noboot(single_sinusoids,k,omega,SF,j_mat,O1,O1p):
+    # amplitudes ratio
+    k=len(omega)
+    amp_ratios=amp_ratio(peaks=single_sinusoids, k=k)
+    raw_amps=get_amps(peaks=single_sinusoids, k=k)
+    omega_ppm=hz2ppm(omega_hz=omega, SF=SF, O1p=O1p)
+    
+
+
+    # table of regional results
+    res_region=pd.DataFrame(({'amp_ratio':amp_ratios,
+                             'omega_hz':omega+O1,
+                             'omega_ppm':omega_ppm,
+                             'amp_height': raw_amps
+                             }))
+
+    res_combo=pd.concat([res_region,j_mat],axis=1)
+   
+    #Find the resultpath
+    path=createResultPath("csv")
+       
+    path=path+"/results.csv"
+   
+    #save as csv
+    res_combo.to_csv(path,index=True,sep=";")
+    return res_combo
+
+
 def createResultPath(filetype):
    
     #Diriger til result path og laver mappen hvis den ikke findes
