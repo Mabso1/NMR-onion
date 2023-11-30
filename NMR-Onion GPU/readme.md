@@ -1,0 +1,1 @@
+This contains the same code as the CPU version of NMR-Onion, but this runs much faster thanks to the usage of a GPU during fitting routine. It should be noted that it has only been tested for Linux distributions, but should work for Mac and Windows as well. If not send any bugs to mabso@dtu.dk
