@@ -40,6 +40,8 @@ To download the data for running the examples either clone the repository or fol
 
 Note, currently only data recorded on Bruker instruments are supported for the native data import function. You can however use the various NMRgule data import features for loading different data formats, but you have to write the import data function yourself. Alternatively, save the spectrum as a txt file and manually do an inverse FFT to get the time domain data, while also setting the spectral parameters manually. 
 
+Note a recent GPU update has been committed. Then GPU version of NMR-Onion can be downloaded under NMR Onion GPU folder. It should be noted that the GPU version has only been tested on Linux but should be able to run on both Mac and Windows. In futre release, the error bootstrap estimation will also have a GPU option. 
+
 # Additional information
 For more information on the background behind the program read our article at (currently in review)
 
