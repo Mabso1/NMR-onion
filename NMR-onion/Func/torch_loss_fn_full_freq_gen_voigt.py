@@ -137,8 +137,9 @@ def onion_genvoigt(omega,tn,t,fs,y):
     init_e=np.hstack(init_e)
     init_scale2=np.hstack(init_scale2)
     
-    init2=np.asarray((init_a,init_f,init_e,init_scale,init_scale2))
-    init2=np.hstack(init2)
+    init2=np.hstack((init_a,init_f,init_e,init_scale,init_scale2))
+    #init2=np.asarray((init_a,init_f,init_e,init_scale,init_scale2))
+    #init2=np.hstack(init2)
         
        
     # convert time (t) and FID values (y) to tensors       

@@ -191,9 +191,9 @@ def onion_lor(omega,tn,t,fs,y):
     init_f=np.hstack(init_f) # collect inital frequency values
  
     
-    
-    init2=np.asarray((init_a,init_f,init_scale,init_scale2)) # set all parameters in an array
-    init2=np.hstack(init2) # stack the array to correct dims
+    init2=np.hstack((init_a,init_f,init_scale,init_scale2))
+   # init2=np.asarray((init_a,init_f,init_scale,init_scale2)) # set all parameters in an array
+    #init2=np.hstack(init2) # stack the array to correct dims
      
         
     # convert time (t) and FID values (y) to tensors       
