@@ -43,7 +43,7 @@ Note, currently only data recorded on Bruker instruments are supported for the n
 Note a recent GPU update has been committed. Then GPU version of NMR-Onion can be downloaded under NMR Onion GPU folder. It should be noted that the GPU version has only been tested on Linux but should be able to run on both Mac and Windows. In futre release, the error bootstrap estimation will also have a GPU option. 
 
 # Additional information
-For more information on the background behind the program read our article at (currently in review)
+For more information on the background behind the program read our article at <https://www.sciencedirect.com/science/article/pii/S2405844024130290>. Please remeber to cite our work if you find it relevant.
 
 
 
