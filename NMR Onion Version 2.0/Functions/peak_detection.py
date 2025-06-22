@@ -276,7 +276,7 @@ def peak_detection (ppm_val,y,width,noise_roi,noise_peaks,t,fs,stepsize=0.001):
         
         while(True):
             cutoff=cutoff-stepsize
-            print(cutoff,min_cutoff)
+          #  print(cutoff,min_cutoff)
             proi=pc1>np.quantile(pc1,cutoff)
         
             proi=trim(proi,100)
