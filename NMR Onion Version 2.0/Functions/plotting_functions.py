@@ -141,12 +141,12 @@ def plot_model_bootstrap(ppm_val, single_sinusoids, y_hat, y_filt,
         for i, idx in enumerate(idx_list):
             y_boot = np.real(np.fft.fftshift(np.fft.fft(single_sinusoids[idx])))
             peak_idx = np.argmax(y_boot)
-            plt.scatter(ppm_val[peak_idx], y_boot[peak_idx], color="black", s=40,
+            plt.scatter(ppm_val[peak_idx], y_boot[peak_idx], color="purple", s=40,
                         label="Uncertain peaks" if i == 0 else None)
 
     # Plot model and data
     plt.plot(ppm_val, y_fft_cut, color="blue", label="Raw data")
-    plt.plot(ppm_val, y_fft_hat, color="green", label="Fitted model")
+    plt.plot(ppm_val, y_fft_hat, color="black", label="Fitted model")
 
     if show_residuals:
         plt.plot(ppm_val, y_fft_resi, color="orange", label="Residuals")
