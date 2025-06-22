@@ -534,5 +534,6 @@ def onion_peak_detection(width, noise_peaks, cut, ylim1, ylim2, y_fft_filt, y_fi
         
         plt.axhline(np.min(np.real(ROI_signal_points[keep_mask])), color="black", linestyle="--", label="Min retained")
         plt.legend()
+        plt.show()
 
     return omega_hz_filtered
