@@ -471,7 +471,7 @@ def onion_peak_detection(width, noise_peaks, cut, ylim1, ylim2, y_fft_filt, y_fi
 
     # 1. Detect peaks in ppm
     omega_ppm = peak_detection(ppm_val=ppm_val, y=y_fft_filt, width=width,
-                               noise_roi=4, noise_peaks=noise_peaks, t=t, fs=fs)
+                               noise_roi=0, noise_peaks=noise_peaks, t=t, fs=fs)
 
     # 2. Convert detected peaks to Hz and filter within ROI
     omega_hz_filtered = peaks2hz(omega_ppm, high_ppm, low_ppm, SF, O1p)
