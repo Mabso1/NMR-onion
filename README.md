@@ -34,7 +34,7 @@ git clonehttps://github.com/Mabso1/NMR-onion_test.git
 Having trouble installing, check out our YouTube video (upcoming)
 
 # Running the program
-The NMR Onion 2.0 version is now here, which can be found under the 2.0 folder, with earlier versions no longer being maintained. The 2.0 version contains a new demo found at  <https://github.com/Mabso1/NMR-onion/blob/main/NMR%20Onion%20Version%202.0/Demo/small_demo_polished.py>
+The NMR Onion 2.0 version is now here, which can be found under the 2.0 folder, with earlier versions no longer being maintained. The 2.0 version contains a new demo found at  <https://github.com/Mabso1/NMR-onion/blob/main/NMR%20Onion%20Version%202.0/Demo/NMR-Onion_2.0_gude.ipynb>
 
 To run the old version (2.0<) of the program, follow the instructions in the examples folder using this link: <https://github.com/Mabso1/NMR-onion/blob/main/NMR-onion/Examples/NMR-Onion%20Guide.ipynb> 
 
