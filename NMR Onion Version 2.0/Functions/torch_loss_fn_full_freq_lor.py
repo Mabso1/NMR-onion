@@ -234,7 +234,7 @@ def onion_lor(omega,tn,t,fs,y):
    # print(loss_current)
     
     # call the LBFGS optimizer from pytorch         
-    optimizer=torch.optim.LBFGS(model.parameters(), lr=0.9, max_iter=200, tolerance_grad=1e-5, tolerance_change=1e-09, history_size=100, line_search_fn='strong_wolfe')
+    optimizer=torch.optim.LBFGS(model.parameters(), lr=0.9, max_iter=50, tolerance_grad=1e-5, tolerance_change=1e-09, history_size=100, line_search_fn='strong_wolfe')
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
     
    # Define the early stopping criteria
