@@ -76,7 +76,7 @@ def genvoigt_wild_boostrap(B,CI_level,alpha,omega,eta,scale1,scale2,t,k,y,fs,mod
             
             try:
                 wild_fit=fit_parameter_error(par_hat=par_hat, fs=fs_new, t=t_new, k=k, y=y_dem)
-                print(wild_fit)
+                #print(wild_fit)
                 par_res=par_est(fit=wild_fit, k=k, model_name=model_name)
                 omega_boot=par_res['omega_est']-hz_moved
                 alpha_boot=expit_sci(par_res['alpha_est']) #convert with expit_sci
