@@ -497,8 +497,9 @@ def onion_peak_detection(width, noise_peaks, cut, ylim1, ylim2, y_fft_filt, y_fi
 
         print(f"Min value found: {np.min(np.real(ROI_signal_points))}, threshold set at: {threshold}")
 
-        keep_mask = ROI_signal_points > threshold
+        keep_mask = np.real(ROI_signal_points) >= threshold
         reject_mask = ~keep_mask
+        
 
         ROI_signal_points_kept = ROI_signal_points[keep_mask]
         ROI_ppm_points_kept = ROI_ppm_points[keep_mask]
@@ -532,5 +533,3 @@ def onion_peak_detection(width, noise_peaks, cut, ylim1, ylim2, y_fft_filt, y_fi
         plt.legend()
 
     return omega_hz_filtered
-
-
