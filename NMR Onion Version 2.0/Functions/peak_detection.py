@@ -529,7 +529,7 @@ def onion_peak_detection(width, noise_peaks, cut, ylim1, ylim2, y_fft_filt, y_fi
         if len(ROI_ppm_points_cut) > 0:
             plt.scatter(ROI_ppm_points_cut, ROI_signal_points_cut, color="purple", label="Cut-off peaks")
 
-        plt.axhline(np.min(np.real(ROI_signal_points)), color="black", linestyle="--", label="Min retained")
+        plt.axhline(np.min(np.real(ROI_signal_points[keep_mask])), color="black", linestyle="--", label="Min retained")
         plt.legend()
 
     return omega_hz_filtered
