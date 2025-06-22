@@ -183,7 +183,7 @@ def onion_pvoigt(omega, tn, t, fs, y):
     
 
     model = SinusoidModel(p, k).to(device)
-    optimizer = torch.optim.LBFGS(model.parameters(), lr=0.9, max_iter=50,
+    optimizer = torch.optim.LBFGS(model.parameters(), lr=0.9, max_iter=20,
                                   tolerance_grad=1e-5, tolerance_change=1e-9,
                                   history_size=100, line_search_fn='strong_wolfe')
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.70)
