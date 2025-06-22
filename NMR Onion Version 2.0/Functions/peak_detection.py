@@ -276,7 +276,7 @@ def peak_detection (ppm_val,y,width,noise_roi,noise_peaks,t,fs,stepsize=0.001):
         
         while(True):
             cutoff=cutoff-stepsize
-          #  print(cutoff,min_cutoff)
+        #    print(cutoff,min_cutoff)
             proi=pc1>np.quantile(pc1,cutoff)
         
             proi=trim(proi,100)
@@ -466,50 +466,71 @@ def integrate_peaks(xlim1_ppm, xlim2_ppm, ylim1, ylim2, single_sinusoids,
 
     return omega_list, omega_hz, int_list
 
-def onion_peak_detection (width,noise_peaks,ylim1,ylim2,y_fft_filt,y_filt,low_ppm,high_ppm,noise_level,ppm_val,freq,t,fs,SF,O1p,plot=True):
-    
+def onion_peak_detection(width, noise_peaks, cut, ylim1, ylim2, y_fft_filt, y_filt,
+                         low_ppm, high_ppm, noise_level, ppm_val, freq, t, fs, SF, O1p, plot=True):
 
-    # detect peaks in ppm:
-    #user parameters: 
-    #width: controls peak width cut off, the lower the value, the more peaks included, 0.8 is the default value
-    #noise_peaks: controls lower boundery of noise floor, the lower the value, the more peaks included, 2 is the defualt value, but for a noise baseline higher values are needed
-    #noise_roi : controls the mask size of each detected signal region, the lower the value, the larger the regions, 0 is the defualt value
-    omega_ppm=peak_detection(ppm_val=ppm_val, y=y_fft_filt, width=width, noise_roi=0, noise_peaks=noise_peaks, t=t, fs=fs)
+    # 1. Detect peaks in ppm
+    omega_ppm = peak_detection(ppm_val=ppm_val, y=y_fft_filt, width=width,
+                               noise_roi=0, noise_peaks=noise_peaks, t=t, fs=fs)
 
+    # 2. Convert detected peaks to Hz and filter within ROI
+    omega_hz_filtered = peaks2hz(omega_ppm, high_ppm, low_ppm, SF, O1p)
 
-    # convert detected peaks to hz 
-    omega_hz_filtered=peaks2hz(omega_ppm,high_ppm,low_ppm,SF,O1p) # convert to hz and make sure only peaks within ROI is present
-    
-    # store the detected peak intensitiy values and ppm/hz values (set ppm_out=True for ppm output, else hz output)
-    ROI_hz_points,ROI_signal_points=signal_points(omega_hz_filtered=omega_hz_filtered, freq=freq, y=y_filt, SF=SF, O1p=O1p,ppm_out=False)
-    
-    ROI_ppm_points=hz2ppm(np.array(ROI_hz_points),SF,O1p) # point values in ppm
+    # 3. Get signal points (Hz and Intensity)
+    ROI_hz_points, ROI_signal_points = signal_points(omega_hz_filtered=omega_hz_filtered,
+                                                     freq=freq, y=y_filt, SF=SF, O1p=O1p, ppm_out=False)
+    ROI_ppm_points = hz2ppm(np.array(ROI_hz_points), SF, O1p)
 
+    # 4. Compute SNR in dB
+    SNR_db = np.log10(np.real(ROI_signal_points) / np.std(noise_level))
+    idx = np.where(SNR_db > 0)[0]
 
-    # compute SNR in dB (make sure nothing below 0 is included)
-    SNR_db=np.log10(ROI_signal_points/np.std(noise_level))
-    idx=np.where(np.real(SNR_db)>0)
-    
-    omega_hz_filtered=omega_hz_filtered[idx]
-    
-    # return SNR filtered omega
-    omega_hz_filtered=omega_hz_filtered[idx]
-    
-    if (plot==True):
-        
-        # check the peak dection within the region
-        plt.xlabel('ppm')  
+    ROI_signal_points = np.array(ROI_signal_points)[idx]
+    ROI_ppm_points = np.array(ROI_ppm_points)[idx]
+    omega_hz_filtered = np.array(omega_hz_filtered)[idx]
+
+    # 5. Apply intensity-based cut if needed
+    if cut > 0:
+        sorted_vals = np.sort(np.real(ROI_signal_points))
+        trimmed_vals = sorted_vals[cut:]
+        threshold = np.min(trimmed_vals)
+
+        print(f"Min value found: {np.min(np.real(ROI_signal_points))}, threshold set at: {threshold}")
+
+        keep_mask = ROI_signal_points > threshold
+        reject_mask = ~keep_mask
+
+        ROI_signal_points_kept = ROI_signal_points[keep_mask]
+        ROI_ppm_points_kept = ROI_ppm_points[keep_mask]
+        omega_hz_filtered = omega_hz_filtered[keep_mask]
+
+        ROI_signal_points_cut = ROI_signal_points[reject_mask]
+        ROI_ppm_points_cut = ROI_ppm_points[reject_mask]
+
+    else:
+        print(f"No cutoff applied (cut=0). Min value: {np.min(np.real(ROI_signal_points))}")
+        ROI_signal_points_kept = ROI_signal_points
+        ROI_ppm_points_kept = ROI_ppm_points
+        ROI_signal_points_cut = np.array([])
+        ROI_ppm_points_cut = np.array([])
+
+    # 6. Plotting
+    if plot:
+        plt.figure(figsize=(8, 4))
+        plt.xlabel('ppm')
         plt.ylabel('Intensity')
-        plt.title("Peaks detected ("+str(low_ppm)+"-"+str(high_ppm)+"ppm)",) 
-        plt.plot(ppm_val,y_fft_filt,color="blue")
-        plt.xlim(low_ppm,high_ppm)
-        #plt.xlim(3.43,3.36)
-        plt.ylim(ylim1,ylim2)
-        for i in range(0,len(omega_hz_filtered)):
-            plt.scatter(ROI_ppm_points[idx[0][i]],ROI_signal_points[idx[0][i]],color="red")
+        plt.title(f"Peaks detected ({low_ppm}-{high_ppm} ppm)")
+        plt.plot(ppm_val, y_fft_filt, color="blue")
+        plt.xlim(low_ppm, high_ppm)
+        plt.ylim(ylim1, ylim2)
 
+        plt.scatter(ROI_ppm_points_kept, ROI_signal_points_kept, color="red", label="Kept peaks")
+        if len(ROI_ppm_points_cut) > 0:
+            plt.scatter(ROI_ppm_points_cut, ROI_signal_points_cut, color="purple", label="Cut-off peaks")
 
-        
-    
-    
+        plt.axhline(np.min(np.real(ROI_signal_points)), color="black", linestyle="--", label="Min retained")
+        plt.legend()
+
     return omega_hz_filtered
+
+
