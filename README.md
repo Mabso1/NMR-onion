@@ -17,7 +17,7 @@ pip install -U scikit-learn
 pip install python-rle
 ```
 
-For PyTorch follow the link of <https://pytorch.org/> and select your operating system
+For PyTorch, follow the link of <https://pytorch.org/> and select your operating system
 Note: If you installed Anconda, it is probably easiest to install from the Anaconda prompt on Windows
 
 # Downloading the program
@@ -34,15 +34,15 @@ git clonehttps://github.com/Mabso1/NMR-onion_test.git
 Having trouble installing, check out our YouTube video (upcoming)
 
 # Running the program
-The NMR Onion 2.0 version is now here, which can be found under the 2.0 folder, with earlier versions no longer being maintained. The 2.0 version contains a new demo found at  <https://github.com/Mabso1/NMR-onion/blob/main/NMR%20Onion%20Version%202.0/Demo/NMR-Onion_2.0_gude.ipynb>. Note that the 2.1 version has been released, which fixes bugs and issues of the 2.0 version
+The NMR Onion 2.0 version is now here, which can be found under the 2.0 folder, with earlier versions no longer being maintained. The 2.1 version contains a new demo found at  <https://github.com/Mabso1/NMR-onion/blob/main/NMR%20Onion%20GPU%20version%202.1/Demo/NMR-Onion_2.1_guide.ipynb>. Note that the 2.1 version fixes bugs and issues of the 2.0 version, and is now working for quantitative NMR.
 
-To run the old version (2.0<) of the program, follow the instructions in the examples folder using this link: <https://github.com/Mabso1/NMR-onion/blob/main/NMR-onion/Examples/NMR-Onion%20Guide.ipynb>. An updated guide will be released soon for the 2.1 version (mostly identical to the 2.0 with some quality of life changes).
+To run the old version (2.0<) of the program, follow the instructions in the examples folder using this link: <https://github.com/Mabso1/NMR-onion/blob/main/NMR-onion/Examples/NMR-Onion%20Guide.ipynb>. 
 
 To download the data for running the examples, either clone the repository or follow this guide <https://www.wikihow.com/Download-a-GitHub-Folder> on how to download a single folder.
 
 Note, currently only data recorded on Bruker instruments are supported for the native data import function. You can, however, use the various NMRgule data import features for loading different data formats, but you have to write the import data function yourself. Alternatively, save the spectrum as a txt file and manually do an inverse FFT to get the time domain data, while also setting the spectral parameters manually. 
 
-Note that the GPU version of NMR-Onion has only been tested on Linux, but it should be able to run on both Mac and Windows. Update: the 2.0> versions run on Windows and Linux, but remains to be tested on Mac
+Note that the GPU version of NMR-Onion has only been tested on Linux, but it should be able to run on both Mac and Windows. Update: the 2.0> versions run on Windows and Linux, but remain to be tested on Mac
 
 
 
